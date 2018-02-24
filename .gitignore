@@ -1,0 +1,21 @@
+# Add any directories, files, or patterns you don't want to be tracked by version control
+/log
+/tmp
+*.log
+
+# Only include if you have production secrets in this file, which is no longer a Rails default
+config/secrets.yml
+
+# dotenv
+# TODO Comment out this rule if environment variables can be committed
+.env
+
+## Environment normalization:
+/.bundle
+/vendor/bundle
+
+# Ignore node_modules
+node_modules/
+
+# vagrant
+.vagrant/
