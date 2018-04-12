@@ -12,7 +12,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.synced_folder ".", "/vagrant"
 
   config.vm.provider "virtualbox" do |vb|
-    vb.memory = "1024"
+    vb.memory = "2048"
   end
 
   # https://github.com/lcreid/rails-5-jade
@@ -29,13 +29,13 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     # apt-get update
     sudo apt-get update
 
-    # install essentials
+    # Install essentials
     sudo apt-get install -y make gcc
 
-    # install git
+    # Install git
     sudo apt-get install -y git
 
-    # install rbenv & ruby-build
+    # Install rbenv & ruby-build
     if ! [ -e $HOME/.rbenv/bin/rbenv ]; then
       sudo apt-get install -y libreadline-dev
       git clone https://github.com/rbenv/rbenv.git ~/.rbenv
@@ -51,18 +51,31 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     # Build default Ruby
     sudo apt-get install -y libssl-dev zlib1g-dev
     $HOME/.rbenv/bin/rbenv rehash
-    $HOME/.rbenv/bin/rbenv install --skip-existing 2.5.0
-    $HOME/.rbenv/bin/rbenv global 2.5.0
+    $HOME/.rbenv/bin/rbenv install --skip-existing 2.5.1
+    $HOME/.rbenv/bin/rbenv global 2.5.1
     $HOME/.rbenv/bin/rbenv rehash
 
     # Nokogiri build dependencies (from http://www.nokogiri.org/tutorials/installing_nokogiri.html#ubuntu___debian)
     sudo apt-get install -y patch zlib1g-dev liblzma-dev
 
-    # Install Node (from https://nodejs.org/en/download/package-manager/#debian-and-ubuntu-based-linux-distributions)
-    which nodejs || {
-      curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
-      sudo apt-get install -y nodejs
-    }
+    # Install nodenv & node-build
+    if ! [ -e $HOME/.nodenv/bin/nodenv ]; then
+      sudo apt-get install -y libreadline-dev
+      git clone https://github.com/nodenv/nodenv.git ~/.nodenv
+      cd ~/.nodenv && src/configure && make -C src
+      echo 'export PATH="$HOME/.nodenv/bin:$PATH"' >> ~/.bashrc
+      echo 'eval "$(nodenv init -)"' >> ~/.bashrc
+      source ~/.bashrc
+
+      git clone https://github.com/nodenv/node-build.git
+      $(cd node-build && sudo ./install.sh)
+    fi
+
+    # Build default Node
+    $HOME/.nodenv/bin/nodenv rehash
+    $HOME/.nodenv/bin/nodenv install --skip-existing 8.11.1
+    $HOME/.nodenv/bin/nodenv global 8.11.1
+    $HOME/.nodenv/bin/nodenv rehash
 
     # Install Yarn
     which yarn || {
@@ -138,8 +151,9 @@ EOF
       echo 'PATH="/usr/local/heroku/bin:$PATH"' >> ~/.bashrc
     }
 
-    # cleanup apt
+    # cleanup apt & upgrade
     sudo apt-get update
+    sudo apt-get -y dist-upgrade
     sudo apt-get -y autoremove
 
     # Install gems
