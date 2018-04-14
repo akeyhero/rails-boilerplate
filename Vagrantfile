@@ -19,6 +19,17 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.provision "shell", privileged: false, inline: <<-SHELL
     set -eux
 
+    # Allocate swap
+    SWAPSIZE=4G
+
+    if ! grep -q 'swapfile' /etc/fstab; then
+      sudo fallocate -l ${SWAPSIZE} /swapfile
+      sudo chmod 600 /swapfile
+      sudo mkswap /swapfile
+      sudo swapon /swapfile
+      echo '/swapfile none swap defaults 0 0' | sudo tee -a /etc/fstab
+    fi
+
     # To fix warning: 'dpkg-reconfigure: unable to re-open stdin: No file or directory'
     sudo ex +"%s@^DPkg@//DPkg" -cwq /etc/apt/apt.conf.d/70debconf \
       && sudo dpkg-reconfigure debconf -f noninteractive -p critical
