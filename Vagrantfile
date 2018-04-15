@@ -19,10 +19,17 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.provision "shell", privileged: false, inline: <<-SHELL
     set -eux
 
-    # Allocate swap
-    SWAPSIZE=4G
+    # Edit .bashrc
+    sed -i -e 's/^HISTSIZE=1000$/HISTSIZE=100000/' ~/.bashrc
+    sed -i -e 's/^HISTFILESIZE=2000$/HISTFILESIZE=200000/' ~/.bashrc
+    if ! grep -q 'PROMPT_COMMAND' ~/.bashrc; then
+      echo "\n"'PROMPT_COMMAND="history -a; history -n"' >> ~/.bashrc
+    fi
 
+    # Allocate swap
     if ! grep -q 'swapfile' /etc/fstab; then
+      SWAPSIZE=4G
+
       sudo fallocate -l ${SWAPSIZE} /swapfile
       sudo chmod 600 /swapfile
       sudo mkswap /swapfile
@@ -51,8 +58,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       sudo apt-get install -y libreadline-dev
       git clone https://github.com/rbenv/rbenv.git ~/.rbenv
       cd ~/.rbenv && src/configure && make -C src
-      echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bashrc
-      echo 'eval "$(rbenv init -)"' >> ~/.bashrc
+      cat << 'EOM' >> ~/.bashrc
+
+export PATH="$HOME/.rbenv/bin:$PATH"
+eval "$(rbenv init -)"
+EOM
       source ~/.bashrc
 
       git clone https://github.com/rbenv/ruby-build.git
@@ -74,8 +84,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       sudo apt-get install -y libreadline-dev
       git clone https://github.com/nodenv/nodenv.git ~/.nodenv
       cd ~/.nodenv && src/configure && make -C src
-      echo 'export PATH="$HOME/.nodenv/bin:$PATH"' >> ~/.bashrc
-      echo 'eval "$(nodenv init -)"' >> ~/.bashrc
+      cat << 'EOM' >> ~/.bashrc
+
+export PATH="$HOME/.nodenv/bin:$PATH"
+eval "$(nodenv init -)"
+EOM
       source ~/.bashrc
 
       git clone https://github.com/nodenv/node-build.git
@@ -159,13 +172,32 @@ EOF
     # Install Heroku Toolbelt
     which heroku || {
       wget -qO- https://toolbelt.heroku.com/install.sh | sh
-      echo 'PATH="/usr/local/heroku/bin:$PATH"' >> ~/.bashrc
+      echo "\n"'PATH="/usr/local/heroku/bin:$PATH"' >> ~/.bashrc
     }
 
     # cleanup apt & upgrade
     sudo apt-get update
     sudo apt-get -y dist-upgrade
     sudo apt-get -y autoremove
+
+    # Install peco
+    which peco || {
+      mkdir ~/bin
+      curl -L https://github.com/peco/peco/releases/download/v0.5.3/peco_linux_amd64.tar.gz | tar -xzC /tmp
+      mv /tmp/peco_linux_amd64/peco ~/bin
+      cat << 'EOM' >> ~/.bashrc
+
+function peco-select-history() {
+    local tac
+    which gtac &> /dev/null && tac="gtac" || \\
+        which tac &> /dev/null && tac="tac" || \\
+        tac="tail -r"
+    READLINE_LINE=$(HISTTIMEFORMAT= history | $tac | sed -e 's/^\\s*[0-9]\\+\\s\\+//' | awk '!a[$0]++' | peco --query "$READLINE_LINE")
+    READLINE_POINT=${#READLINE_LINE}
+}
+bind -x '"\\C-r": peco-select-history'
+EOM
+    }
 
     # Install gems
     $HOME/.rbenv/shims/gem install bundler
