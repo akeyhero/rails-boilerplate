@@ -17,7 +17,7 @@ $ brew cask install virtualbox
 
 ## 2. Vagrantfile の準備
 
-適当なフォルダを作って、 `Vagrantfile` と `.gitignore` をコピーします。
+適当なフォルダを作って、 `Vagrantfile` をコピーします。
 
 ## 3. 環境構築
 
