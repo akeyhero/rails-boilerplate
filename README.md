@@ -15,6 +15,8 @@ $ brew cask install vagrant
 $ brew cask install virtualbox
 ```
 
+Windows の場合、加えて SSH をインストールする必要があります: https://www.eaton-daitron.jp/techblog/4627.html
+
 ## 2. Vagrantfile の準備
 
 適当なフォルダを作って、 `Vagrantfile` をコピーします。
@@ -104,7 +106,7 @@ gem "rails"
 そして、先程のターミナルで以下のコマンドを実行すると、 Ruby on Rails がインストールされます。
 
 ```bash
-$ bundle install --path=vendor/bundle --without=production --jobs=2
+$ bundle install --path=vendor/bundle --without=production --jobs=4
 ```
 
 参考文献: 細かい話は[こちらの記事](http://maetoo11.hatenablog.com/entry/2016/03/04/144216)に掲載されています。
