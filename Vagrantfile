@@ -78,7 +78,7 @@ EOM
     $HOME/.rbenv/bin/rbenv rehash
 
     # Nokogiri build dependencies (from http://www.nokogiri.org/tutorials/installing_nokogiri.html#ubuntu___debian)
-    sudo apt-get install -y patch zlib1g-dev liblzma-dev
+    sudo apt-get install -y patch zlib1g-dev liblzma-dev libxslt-dev
 
     # Install nodenv & node-build
     if ! [ -e $HOME/.nodenv/bin/nodenv ]; then
