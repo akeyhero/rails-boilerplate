@@ -118,36 +118,13 @@ $ bundle install --path=vendor/bundle --without=production --jobs=4
 以下のコマンドを実行します。 `bundle exec` は bundler でインストールした gem を動かすための枕詞です。途中で `conflict Gemfile` と表示される事になりますが、 `Y` と入力して上書きしてください。
 
 ```bash
-$ bundle exec rails new . --database=postgresql --skip-coffee --skip-turbolinks --skip-bundle --skip-test-unit
+$ bundle exec rails new . --database=postgresql --skip-coffee --skip-turbolinks
 ```
 
-次の節で RSpec を導入しない場合は、ここで `bundle install` を実行します。
-
-```
-$ bundle install
-```
-
-Vagrant で実行する場合、 Vagrant のローカル IP アドレスをホワイトリストに登録する必要があります。 `config/environments/development.rb` に以下の設定を書き加えます。
+完了したら、 Vagrant で実行する場合、 Vagrant のローカル IP アドレスをホワイトリストに登録する必要があります。 `config/environments/development.rb` に以下の設定を書き加えます。
 
 ```ruby
   config.web_console.whitelisted_ips = '10.0.2.0/24'
-```
-
-### RSpec 導入
-
-ここではテストをスキップしましたが、これは標準の minitest ではなく、 RSpec を導入するためです。(ある程度の規模 Rails アプリケーションをテスト無しで開発することはできません。) Gemfile を開き、以下のコードを追加します。
-
-```ruby
-group :test, :development do
-  gem 'rspec-rails', '~> 3.7.2'
-end
-```
-
-インストール & セットアップをします。
-
-```bash
-$ bundle install
-$ bundle exec rails generate rspec:install
 ```
 
 ### DB 作成
