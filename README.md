@@ -121,10 +121,22 @@ $ bundle install --path=vendor/bundle --without=production --jobs=4
 $ bundle exec rails new . --database=postgresql --skip-coffee --skip-turbolinks
 ```
 
-完了したら、 Vagrant で実行する場合、 Vagrant のローカル IP アドレスをホワイトリストに登録する必要があります。 `config/environments/development.rb` に以下の設定を書き加えます。
+Vagrant で実行する場合、以下の作業を行うことをおすすめします。
 
-```ruby
-  config.web_console.whitelisted_ips = '10.0.2.0/24'
+- デフォルトの file_watcher がうまく働かない事があるので、 `ActiveSupport::FileUpdateChecker` を使う
+- Vagrant のローカル IP アドレスをホワイトリストに登録する
+
+このために、 `config/environments/development.rb` に以下の設定を書き加えます。
+
+```diff
+   # Use an evented file watcher to asynchronously detect changes in source code,
+   # routes, locales, etc. This feature depends on the listen gem.
+-  config.file_watcher = ActiveSupport::EventedFileUpdateChecker
++  config.file_watcher = ActiveSupport::FileUpdateChecker
++
++  # For Vagrant environments
++  config.web_console.whitelisted_ips = '10.0.2.0/24'
+ end
 ```
 
 ### DB 作成
