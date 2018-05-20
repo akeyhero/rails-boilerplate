@@ -109,6 +109,14 @@ gem "rails"
 $ bundle install --path=vendor/bundle --without=production --jobs=4
 ```
 
+環境によって `nokogiri` のインストールに失敗するようです。その場合、
+
+```bash
+$ bundle config build.nokogiri --use-system-libraries
+```
+
+を実行して、再度 `bundle install` を実行します。
+
 参考文献: 細かい話は[こちらの記事](http://maetoo11.hatenablog.com/entry/2016/03/04/144216)に掲載されています。
 
 ## 7. Ruby on Rails プロジェクトの作成
@@ -126,7 +134,7 @@ Vagrant で実行する場合、以下の作業を行うことをおすすめし
 - デフォルトの file_watcher がうまく働かない事があるので、 `ActiveSupport::FileUpdateChecker` を使う
 - Vagrant のローカル IP アドレスをホワイトリストに登録する
 
-このために、 `config/environments/development.rb` に以下の設定を書き加えます。
+これは、 `config/environments/development.rb` に以下の設定を書き加えます。
 
 ```diff
    # Use an evented file watcher to asynchronously detect changes in source code,
