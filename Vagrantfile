@@ -202,6 +202,6 @@ EOM
     }
 
     # Install gems
-    $HOME/.rbenv/shims/gem install bundler
+    $HOME/.rbenv/shims/gem install bundler foreman
   SHELL
 end
