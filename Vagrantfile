@@ -7,6 +7,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.box = "ubuntu/xenial64"
 
   config.vm.network "forwarded_port", guest: 3000, host: 3000
+  config.vm.network "forwarded_port", guest: 3035, host: 3035
   config.vm.network "private_network", ip: "192.168.33.52"
 
   config.vm.synced_folder ".", "/vagrant"
