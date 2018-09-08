@@ -10,7 +10,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.network "forwarded_port", guest: 3035, host: 3035
   config.vm.network "private_network", ip: "192.168.33.52"
 
-  config.vm.synced_folder ".", "/vagrant"
+  config.vm.synced_folder ".", "/vagrant", type: "nfs"
 
   config.vm.provider "virtualbox" do |vb|
     vb.memory = "2048"
